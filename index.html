@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Happy Birthday Website</title>
+  <!-- ភ្ជាប់ Font ខ្មែរ (Kantumruy Pro) និងអង់គ្លេស (Poppins) ឱ្យចេញស្អាត -->
+  <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@400;600;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Poppins', 'Kantumruy Pro', sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background-color: #090a0f;
+      background-image: 
+        radial-gradient(circle at 15% 15%, rgba(37, 244, 238, 0.14), transparent 35%),
+        radial-gradient(circle at 85% 80%, rgba(254, 44, 85, 0.15), transparent 40%);
+      color: #ffffff;
+      padding: 25px 20px 60px;
+      overflow-x: hidden;
+    }
+
+    /* ផ្ទាំងបាញ់ក្រដាសពណ៌ Confetti */
+    #confettiCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 999;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    /* របារខាងលើ និងប៊ូតុងប្តូរភាសា */
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 35px;
+      background: rgba(22, 24, 35, 0.75);
+      padding: 12px 20px;
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(12px);
+    }
+
+    .logo {
+      font-weight: 700;
+      font-size: 18px;
+      background: linear-gradient(90deg, #25f4ee, #fe2c55);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .lang-btn {
+      background: rgba(255, 255, 255, 0.08);
+      color: #ffffff;
+      border: 1px solid rgba(37, 244, 238, 0.4);
+      padding: 8px 16px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .lang-btn:hover {
+      background: rgba(37, 244, 238, 0.15);
+      transform: translateY(-2px);
+    }
+
+    /* ផ្នែកក្បាលខាងលើ (Hero Section) */
+    .hero-card {
+      background: rgba(22, 24, 35, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 28px;
+      padding: 40px 25px;
+      text-align: center;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+      margin-bottom: 35px;
+      position: relative;
+    }
+
+    .badge {
+      display: inline-block;
+      background: rgba(254, 44, 85, 0.15);
+      color: #fe2c55;
+      border: 1px solid rgba(254, 44, 85, 0.35);
+      font-size: 13px;
+      font-weight: 700;
+      padding: 6px 16px;
+      border-radius: 20px;
+      margin-bottom: 16px;
+    }
+
+    .hero-card h1 {
+      font-size: 32px;
+      margin-bottom: 12px;
+      line-height: 1.3;
+    }
+
+    .highlight-name {
+      background: linear-gradient(90deg, #25f4ee, #fe2c55);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-card p {
+      color: #a0a5b5;
+      font-size: 15px;
+      max-width: 580px;
+      margin: 0 auto 28px;
+      line-height: 1.7;
+    }
+
+    /* ប្រអប់រាប់ម៉ោងថយក្រោយ (Countdown) */
+    .countdown {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 28px;
+      flex-wrap: wrap;
+    }
+
+    .time-box {
+      background: rgba(9, 10, 15, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      padding: 12px 16px;
+      min-width: 78px;
+    }
+
+    .time-box span {
+      display: block;
+      font-size: 24px;
+      font-weight: 700;
+      color: #25f4ee;
+    }
+
+    .time-box small {
+      font-size: 12px;
+      color: #8a8f9e;
+    }
+
+    /* ប៊ូតុងចុចអបអរ និងផ្ញើសារ */
+    .action-btns {
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .btn-celebrate {
+      padding: 13px 26px;
+      background: linear-gradient(90deg, #fe2c55, #ff0050);
+      color: #ffffff;
+      border: none;
+      border-radius: 14px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 8px 25px rgba(254, 44, 85, 0.4);
+      transition: all 0.2s ease;
+    }
+
+    .btn-celebrate:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 30px rgba(254, 44, 85, 0.6);
+    }
+
+    .btn-wish {
+      padding: 13px 26px;
+      background: rgba(255, 255, 255, 0.06);
+      color: #ffffff;
+      border: 1px solid rgba(37, 244, 238, 0.4);
+      border-radius: 14px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-wish:hover {
+      background: rgba(37, 244, 238, 0.14);
+      transform: translateY(-2px);
+    }
+
+    /* ផ្នែកបង្ហាញរូបថតទាំង ៤ សន្លឹក (Photo Gallery) */
+    .gallery-title {
+      text-align: center;
+      font-size: 22px;
+      margin-bottom: 20px;
+    }
+
+    .photo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 18px;
+    }
+
+    .photo-card {
+      background: rgba(22, 24, 35, 0.9);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      padding: 10px;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .photo-card:hover {
+      transform: translateY(-6px);
+      border-color: #fe2c55;
+      box-shadow: 0 12px 30px rgba(254, 44, 85, 0.25);
+    }
+
+    .img-box {
+      width: 100%;
+      height: 230px;
+      border-radius: 14px;
+      overflow: hidden;
+      background-color: #161823;
+      margin-bottom: 10px;
+    }
+
+    .img-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 20%;
+      transition: transform 0.4s ease;
+    }
+
+    .photo-card:hover .img-box img {
+      transform: scale(1.06);
+    }
+
+    .photo-caption {
+      text-align: center;
+      font-size: 13px;
+      color: #cbd5e1;
+      padding: 4px 0;
+      font-weight: 600;
+    }
+
+    /* ផ្ទាំងមើលរូបធំ (Lightbox Modal) */
+    .lightbox {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.88);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .lightbox.active {
+      display: flex;
+    }
+
+    .lightbox img {
+      max-width: 90%;
+      max-height: 85vh;
+      border-radius: 16px;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+    }
+  </style>
+</head>
+<body>
+
+  <canvas id="confettiCanvas"></canvas>
+
+  <div class="container">
+    <!-- របារខាងលើ និងប៊ូតុងប្តូរភាសា -->
+    <nav class="navbar">
+      <div class="logo">🎂 B-DAY PARTY</div>
+      <button class="lang-btn" id="langToggle" onclick="toggleLanguage()">
+        🇬🇧 English
+      </button>
+    </nav>
+
+    <!-- ផ្ទាំងកណ្តាល -->
+    <div class="hero-card">
+      <span class="badge" data-i18n="badge">🎉 ថ្ងៃពិសេសប្រចាំឆ្នាំ</span>
+      <h1>
+        <span data-i18n="title">រីករាយថ្ងៃខួបកំណើត</span> 
+        <span class="highlight-name" id="personName">Vichhai</span>!
+      </h1>
+      <p data-i18n="message">
+        សូមជូនពរឱ្យជួបតែសំណាងល្អ សុខភាពល្អ រៀនពូកែ និងជោគជ័យគ្រប់ការងារទាំងអស់! អរគុណអ្នកទាំងអស់គ្នាដែលបានចូលរួមអបអរ។
+      </p>
+
+      <!-- នាឡិការាប់ថយក្រោយ -->
+      <div class="countdown">
+        <div class="time-box">
+          <span id="days">00</span>
+          <small data-i18n="days">ថ្ងៃ</small>
+        </div>
+        <div class="time-box">
+          <span id="hours">00</span>
+          <small data-i18n="hours">ម៉ោង</small>
+        </div>
+        <div class="time-box">
+          <span id="minutes">00</span>
+          <small data-i18n="minutes">នាទី</small>
+        </div>
+        <div class="time-box">
+          <span id="seconds">00</span>
+          <small data-i18n="seconds">វិនាទី</small>
+        </div>
+      </div>
+
+      <!-- ប៊ូតុងចុច -->
+      <div class="action-btns">
+        <button class="btn-celebrate" onclick="launchConfetti()" data-i18n="celebrateBtn">
+          🎊 ចុចបាញ់កាំជ្រួចអបអរ!
+        </button>
+        <button class="btn-wish" onclick="sendWish()" data-i18n="wishBtn">
+          💬 ផ្ញើសារជូនពរ (Telegram)
+        </button>
+      </div>
+    </div>
+
+    <!-- កន្លែងដាក់រូបថត ៤ សន្លឹក -->
+    <h2 class="gallery-title" data-i18n="galleryTitle">📸 កម្រងរូបភាពអនុស្សាវរីយ៍</h2>
+    <div class="photo-grid" id="photoGrid"></div>
+  </div>
+
+  <!-- ផ្ទាំងចុចមើលរូបធំ -->
+  <div class="lightbox" id="lightbox" onclick="closeLightbox()">
+    <img id="lightboxImg" src="" alt="Preview">
+  </div>
+
+  <script>
+    // ====================================================
+    // ១. កន្លែងកែឈ្មោះ, ថ្ងៃខួប និងដាក់រូបថតទាំង ៤ សន្លឹក
+    // ====================================================
+    const MY_CONFIG = {
+      name: "អាយា",
+      birthdayDate: "2026-12-02T00:00:00", // ថ្ងៃខែឆ្នាំខួបកំណើត (YYYY-MM-DD)
+      wishLink: "https://t.me/ahya",   // ដាក់ Link Telegram ឬ TikTok របស់ bro
+
+      // ដាក់ឈ្មោះ File រូបថតទាំង ៤ សន្លឹករបស់ bro នៅទីនេះ (ត្រូវដាក់ក្នុង Folder តែមួយជាមួយ index.html)
+      photos: [
+        {
+          src: "Screenshot 2026-11-12 113100.png",
+          caption_km: "រូបទី ១៖ ថ្ងៃពិសេស ✨",
+          caption_en: "Photo 1: Special Day ✨"
+        },
+        {
+          src: "pic2.png",
+          caption_km: "រូបទី ២៖ អនុស្សាវរីយ៍ល្អៗ 🔥",
+          caption_en: "Photo 2: Good Vibes 🔥"
+        },
+        {
+          src: "pic3.png",
+          caption_km: "រូបទី ៣៖ ដើរលេងកម្សាន្ត 🌲",
+          caption_en: "Photo 3: Adventure Time 🌲"
+        },
+        {
+          src: "pic4.png",
+          caption_km: "រូបទី ៤៖ ស្ទាយ៍ឡូយៗ 😎",
+          caption_en: "Photo 4: Cool Style 😎"
+        }
+      ]
+    };
+
+    // ====================================================
+    // ២. ទិន្នន័យភាសា ខ្មែរ ⇄ អង់គ្លេស
+    // ====================================================
+    const TRANSLATIONS = {
+      km: {
+        badge: "🎉 ថ្ងៃពិសេសប្រចាំឆ្នាំ",
+        title: "រីករាយថ្ងៃខួបកំណើត",
+        message: "សូមជូនពរឱ្យជួបតែសំណាងល្អ សុខភាពល្អ រៀនពូកែ និងជោគជ័យគ្រប់ការងារទាំងអស់! អរគុណអ្នកទាំងអស់គ្នាដែលបានចូលរួមអបអរ។",
+        days: "ថ្ងៃ",
+        hours: "ម៉ោង",
+        minutes: "នាទី",
+        seconds: "វិនាទី",
+        celebrateBtn: "🎊 ចុចបាញ់កាំជ្រួចអបអរ!",
+        wishBtn: "💬 ផ្ញើសារជូនពរ (Telegram)",
+        galleryTitle: "📸 កម្រងរូបភាពអនុស្សាវរីយ៍",
+        toggleBtn: "🇬🇧 English"
+      },
+      en: {
+        badge: "🎉 SPECIAL DAY OF THE YEAR",
+        title: "Happy Birthday",
+        message: "Wishing a year filled with good luck, great health, top grades, and success in every project! Thank you everyone for celebrating together.",
+        days: "Days",
+        hours: "Hours",
+        minutes: "Minutes",
+        seconds: "Seconds",
+        celebrateBtn: "🎊 Celebrate with Confetti!",
+        wishBtn: "💬 Send Wishes (Telegram)",
+        galleryTitle: "📸 Featured Memories",
+        toggleBtn: "🇰🇭 ភាសាខ្មែរ"
+      }
+    };
+
+    let currentLang = "km";
+    document.getElementById("personName").innerText = MY_CONFIG.name;
+
+    // មុខងារបង្កើតរូបថតទាំង ៤ សន្លឹកចូលក្នុង Grid
+    function renderPhotos() {
+      const grid = document.getElementById("photoGrid");
+      grid.innerHTML = "";
+
+      // រូបជំនួសបណ្តោះអាសន្ន បើ bro មិនទាន់បានដាក់ File រូបទី 2, 3, 4 ចូលក្នុង Folder
+      const fallbackImages = [
+        "Screenshot 2026-11-12 113100.png",
+        "photo_2026-11-12_11-54-25.jpg",
+        "photo_2026-11-12_11-54-23.jpg",
+        "photo_2026-11-12_11-54-21.jpg"
+      ];
+
+      MY_CONFIG.photos.forEach((item, index) => {
+        const caption = currentLang === "km" ? item.caption_km : item.caption_en;
+        const card = document.createElement("div");
+        card.className = "photo-card";
+        card.innerHTML = `
+          <div class="img-box">
+            <img src="${item.src}" alt="Memory ${index + 1}" onerror="this.src='${fallbackImages[index % 4]}'">
+          </div>
+          <div class="photo-caption">${caption}</div>
+        `;
+        card.onclick = () => openLightbox(card.querySelector("img").src);
+        grid.appendChild(card);
+      });
+    }
+
+    // មុខងារប្តូរភាសា ខ្មែរ ⇄ English
+    function toggleLanguage() {
+      currentLang = currentLang === "km" ? "en" : "km";
+      const dict = TRANSLATIONS[currentLang];
+
+      document.querySelectorAll("[data-i18n]").forEach(el => {
+        const key = el.getAttribute("data-i18n");
+        if (dict[key]) el.innerText = dict[key];
+      });
+
+      document.getElementById("langToggle").innerText = dict.toggleBtn;
+      renderPhotos();
+    }
+
+    // មុខងារបើក/បិទរូបធំពេលចុចលើរូបថត
+    function openLightbox(src) {
+      document.getElementById("lightboxImg").src = src;
+      document.getElementById("lightbox").classList.add("active");
+    }
+    function closeLightbox() {
+      document.getElementById("lightbox").classList.remove("active");
+    }
+
+    // មុខងារលោតទៅកាន់ Link Telegram / TikTok
+    function sendWish() {
+      window.open(MY_CONFIG.wishLink, "_blank");
+    }
+
+    // មុខងាររាប់ម៉ោងថយក្រោយ (Countdown Timer)
+    function updateCountdown() {
+      const target = new Date(MY_CONFIG.birthdayDate).getTime();
+      const now = new Date().getTime();
+      const diff = target - now;
+
+      if (diff <= 0) {
+        document.getElementById("days").innerText = "🎉";
+        document.getElementById("hours").innerText = "00";
+        document.getElementById("minutes").innerText = "00";
+        document.getElementById("seconds").innerText = "00";
+        return;
+      }
+
+      const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const s = Math.floor((diff % (1000 * 60)) / 1000);
+
+      document.getElementById("days").innerText = String(d).padStart(2, "0");
+      document.getElementById("hours").innerText = String(h).padStart(2, "0");
+      document.getElementById("minutes").innerText = String(m).padStart(2, "0");
+      document.getElementById("seconds").innerText = String(s).padStart(2, "0");
+    }
+
+    // មុខងារបាញ់ក្រដាសពណ៌ Confetti
+    const canvas = document.getElementById("confettiCanvas");
+    const ctx = canvas.getContext("2d");
+    let particles = [];
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener("resize", resizeCanvas);
+    resizeCanvas();
+
+    function launchConfetti() {
+      const colors = ["#25f4ee", "#fe2c55", "#facc15", "#a855f7", "#ffffff"];
+      for (let i = 0; i < 90; i++) {
+        particles.push({
+          x: window.innerWidth / 2,
+          y: window.innerHeight / 2,
+          vx: (Math.random() - 0.5) * 18,
+          vy: (Math.random() - 0.8) * 18,
+          size: Math.random() * 8 + 4,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          life: 100
+        });
+      }
+    }
+
+    function animateConfetti() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach((p, i) => {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += 0.35; // ទំនាញផែនដី
+        p.life -= 1;
+        ctx.fillStyle = p.color;
+        ctx.fillRect(p.x, p.y, p.size, p.size);
+        if (p.life <= 0) particles.splice(i, 1);
+      });
+      requestAnimationFrame(animateConfetti);
+    }
+
+    // ចាប់ផ្តើមដំណើរការពេលបើកទំព័រដំបូង
+    renderPhotos();
+    setInterval(updateCountdown, 1000);
+    updateCountdown();
+    animateConfetti();
+    setTimeout(launchConfetti, 500);
+  </script>
+
+</body>
+</html>
